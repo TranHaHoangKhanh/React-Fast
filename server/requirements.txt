@@ -400,7 +400,7 @@ webcolors==24.8.0
 webencodings==0.5.1
 websocket-client==1.8.0
 websockets==13.1
-Werkzeug==3.0.3
+Werkzeug==3.0.6
 whatthepatch==1.0.2
 wheel==0.44.0
 widgetsnbextension==3.6.6
