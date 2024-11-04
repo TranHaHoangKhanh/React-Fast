@@ -327,7 +327,7 @@ s3transfer==0.10.1
 scikit-image==0.24.0
 scikit-learn==1.5.1
 scipy==1.13.1
-Scrapy==2.11.1
+Scrapy==2.11.2
 seaborn==0.13.2
 semver==3.0.2
 Send2Trash==1.8.2
