@@ -1,29 +1,44 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from src.db.database import db
+from src.service.auth_service import generate_role
 
 
 origins = [
     "http://localhost:3000",
     ]
 
-app = FastAPI(
-    title="React Fast API",
-    description="This is my application",
-    version="0.1.0",
-)
+def init_app():
+    db.init()
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+    app = FastAPI(
+        title= "React FastApi App",
+        description= "This is a React FastApi App with basic function",
+        version= "0.1.0"
+    )
 
-router = APIRouter()
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"]
+    )
 
-@router.get("/")
-def read_root():
-    return {"Hello": "World"}
+    @app.on_event("startup")
+    async def starup():
+        await db.create_all()
+        await generate_role()
     
-app.include_router(router)
+    @app.on_event("shutdown")
+    async def shutdown():
+        await db.close()
+
+    from src.controller import authentication, users
+
+    app.include_router(authentication.router)
+    app.include_router(users.router)
+
+    return app
+
+app = init_app()
