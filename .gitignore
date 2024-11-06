@@ -136,3 +136,6 @@ database.db
 
 # Misc
 .DS_Store
+
+# VSCode
+.vscode
