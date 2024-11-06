@@ -1,18 +1,17 @@
-from datetime import datetime
 import base64
+from datetime import datetime
 from uuid import uuid4
 from fastapi import HTTPException
 
 from passlib.context import CryptContext
 from src.schema.schema import RegisterSchema, LoginSchema, ForgotPasswordSchema
-from src.model import Person, Users, Role
+from src.model import Person, Users, UsersRole, Role
 from src.repository.role import RoleRepository
 from src.repository.users import UsersRepository
 from src.repository.person import PersonRepository
 from src.repository.user_role import UsersReleRepository
 from src.repository.auth_repo import JWTRepo
 import os
-from pathlib import Path
 
 #Encrypt password
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -27,7 +26,7 @@ class AuthService:
         _user_id = str(uuid4())
         
         # convert birth date type from frontend str to datetime
-        birth_date = datetime.strptime(register.birth, "%d-%m-%Y").date()
+        birth_date = datetime.strptime(register.birth, "%d-%m-%Y")
         
         # open image profile default to base64 string
         BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -49,7 +48,7 @@ class AuthService:
         
         # Everyone who registers through our registration page makes the default user
         _role = await RoleRepository.find_by_role_name("user")
-        _users_role = UsersReleRepository(users_id=_user_id, role_id=_role.id)
+        _users_role = UsersRole(users_id=_user_id, role_id=_role.id)
         
         # Checking the same username
         _username = await UsersRepository.find_by_username(register.username)

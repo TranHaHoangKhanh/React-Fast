@@ -234,7 +234,7 @@ patsy==0.5.6
 pexpect==4.8.0
 pickleshare==0.7.5
 pillow==10.4.0
-pip==24.2
+pip==24.3.1
 pkce==1.0.3
 pkginfo==1.10.0
 platformdirs==3.10.0

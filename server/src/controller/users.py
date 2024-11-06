@@ -7,12 +7,12 @@ from src.service.users import UserService
 
 
 router = APIRouter(
-    prefix="/Users", 
+    prefix="/users", 
     tags=["users"],
     dependencies=[Depends(JWTBearer())]
 )
 
-@router.post("/", response_model=ResponseSchema, response_model_exclude_none=True)
+@router.get("/", response_model=ResponseSchema, response_model_exclude_none=True)
 async def get_user_profile(credentials: HTTPAuthorizationCredentials = Security(JWTBearer())):
     # Extract username from JWT token
     token = JWTRepo.extract_token(credentials)
