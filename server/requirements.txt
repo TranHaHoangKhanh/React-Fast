@@ -134,7 +134,7 @@ imageio==2.33.1
 imagesize==1.4.1
 imbalanced-learn==0.12.3
 importlib-metadata==7.0.1
-incremental==22.10.0
+incremental==24.7.2
 inflection==0.5.1
 iniconfig==1.1.1
 intake==2.0.7

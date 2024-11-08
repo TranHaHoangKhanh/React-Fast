@@ -2,9 +2,7 @@ from datetime import date
 from typing import Optional
 from enum import Enum
 from sqlmodel import SQLModel, Field, Relationship
-from pydantic import ConfigDict
 from src.model.mixins import TimeMixin
-
 class Sex(str, Enum):
     MALE = "MALE"
     FEMALE = "FEMALE"
