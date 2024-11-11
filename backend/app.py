@@ -4,10 +4,6 @@ from src.db.database import db
 from src.service.auth_service import generate_role
 
 
-origins = [
-    "http://localhost:3000",
-    ]
-
 def init_app():
     db.init()
 
@@ -19,7 +15,7 @@ def init_app():
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=origins,
+        allow_origins=["*"],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"]
