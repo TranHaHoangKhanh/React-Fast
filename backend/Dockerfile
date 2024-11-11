@@ -4,14 +4,6 @@ FROM python:latest
 # Set the working directory in the container
 WORKDIR /api
 
-
-# Install Qt dependencies with the updated package names
-RUN apt-get update && apt-get install -y \
-    qtbase5-dev \
-    qttools5-dev-tools \
-    && rm -rf /var/lib/apt/lists/*
-
-
 # Copy the requirements file into the container
 COPY ./requirements.txt /api/requirements.txt
 
