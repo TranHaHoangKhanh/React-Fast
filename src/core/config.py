@@ -1,18 +1,14 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
-    DATABASE_PORT: int
-    POSTGRES_HOSTNAME: str
-    POSTGRES_PASSWORD: str
-    POSTGRES_DB: str
-    POSTGRES_USER: str
-    SECRET_KEY: str
-    ALGORITHM: str
+    DATABASE_URL: str
+    REDIS_HOST: str
+    REDIS_PORT: int
+    JWT_SECRET: str
+    JWT_ALGORITHM: str
+    ACCESS_TOKEN_EXPIRY: int
+    REFRESH_TOKEN_EXPIRY: int
     
-
-    class Config:
-        env_file = ".env"
-
+    model_config = SettingsConfigDict(env_file=".env",extra="ignore")
 
 settings = Settings()
-

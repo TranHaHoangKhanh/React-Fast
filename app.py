@@ -1,40 +1,28 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from src.db.database import db
-from src.service.auth_service import generate_role
+from src.routers.router_book import book_router
+from src.routers.router_user import user_router
+from src.routers.router_review import review_router
+from src.routers.router_tag import tag_router
+from contextlib import asynccontextmanager
+from src.db.database import init_db
 
 
-def init_app():
-    db.init()
+@asynccontextmanager
+async def life_span(app: FastAPI):
+    print(f"server is starting ....")
+    await init_db()
+    yield 
+    print(f"server has been stopped")
 
-    app = FastAPI(
-        title= "React FastApi App",
-        description= "This is a React FastApi App with basic function",
-        version= "0.1.0"
-    )
+version = "v1"
 
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"]
-    )
+app = FastAPI(
+    title="FastAPI App",
+    description="A simple FastAPI app",
+    version=version
+)
 
-    @app.on_event("startup")
-    async def starup():
-        await db.create_all()
-        await generate_role()
-    
-    @app.on_event("shutdown")
-    async def shutdown():
-        await db.close()
-
-    from src.controller import authentication, users
-
-    app.include_router(authentication.router)
-    app.include_router(users.router)
-
-    return app
-
-app = init_app()
+app.include_router(book_router)
+app.include_router(user_router)
+app.include_router(review_router)
+app.include_router(tag_router)
