@@ -10,6 +10,14 @@ from src.services.book_services import BookService
 from src.models.models import Review
 
 from src.schemas.review_schemas import ReviewCreateModel
+from src.utils.error_handling import (
+    ReviewNotFound,
+    BookNotFound,
+    UserNotFound,
+    ReviewError,
+    ReviewNotDeleted
+)
+
 
 book_service = BookService()
 user_service = UserService()
@@ -30,30 +38,21 @@ class ReviewService:
 
         result = await session.exec(statement)
         review = result.first()
-        
+
         if not review:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Review not found"
-            )
-        
+            raise ReviewNotFound()
+
         return review
 
     async def add_review_to_book(self, user_email: str, book_uid: str, review_data: ReviewCreateModel, session: AsyncSession):
         try:
             book = await book_service.get_book(book_uid=book_uid, session=session)
             if not book:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="Book not found"
-                )
+                raise BookNotFound()
 
             user = await user_service.get_user_by_email(email=user_email, session=session)
             if not user:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail="User not found"
-                )
+                raise UserNotFound()
 
             review_data_dict = review_data.model_dump()
 
@@ -65,23 +64,19 @@ class ReviewService:
 
             return new_review
         except Exception as e:
+
             logging.error(e)
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Oops... somethig went wrong!"
-            )
-    
+
+            raise ReviewError()
+
     async def delete_review_to_from_book(self, review_uid: str, user_email: str, session: AsyncSession):
         user = await user_service.get_user_by_email(user_email, session)
-        
+
         review = await self.get_review(review_uid, session)
-        
+
         if not review or (review.user != user):
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Cannot delete this review"
-            )
+            raise ReviewNotDeleted()
+
         await session.delete(review)
-        
+
         await session.commit()
-        

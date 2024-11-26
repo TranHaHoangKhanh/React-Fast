@@ -3,11 +3,7 @@ from src.core.config import settings
 
 JTI_EXPIRY = settings.ACCESS_TOKEN_EXPIRY
 
-token_blocklist = aioredis.StrictRedis(
-    host=settings.REDIS_HOST,
-    port=settings.REDIS_PORT,
-    db=0
-)
+token_blocklist = aioredis.from_url(settings.REDIS_URL)
 
 async def add_jti_to_blocklist(jti: str) -> None:
     await token_blocklist.set(name=jti, value="", ex=JTI_EXPIRY)

@@ -10,19 +10,19 @@ from src.services.review_services import ReviewService
 
 review_service = ReviewService()
 review_router = APIRouter(
-    prefix="/api/v1/reviews", 
+    prefix='/api/v1/reviews', 
     tags=["reviews"]
 )
 admin_role_checker = Depends(RoleChecker(["admin"]))
 user_role_checker = Depends(RoleChecker(["admin", "user"]))
 
-@review_router.get("/", dependencies=[admin_role_checker])
+@review_router.get('/', dependencies=[admin_role_checker])
 async def get_all_reviews(session: AsyncSession = Depends(get_session)):
     books = await review_service.get_all_reviews(session=session)
     
     return books
 
-@review_router.get("/{review_uid}", dependencies=[user_role_checker])
+@review_router.get('/{review_uid}', dependencies=[user_role_checker])
 async def get_review(review_uid: str, session: AsyncSession = Depends(get_session)):
     review  = await review_service.get_review(review_uid, session)
     

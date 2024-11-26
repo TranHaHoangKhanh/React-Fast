@@ -6,6 +6,7 @@ from pydantic import BaseModel
 
 from src.schemas.review_schemas import ReviewModel
 from src.schemas.tag_schemas import TagModel
+
 class Book(BaseModel):
     uid: uuid.UUID
     title: str

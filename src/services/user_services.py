@@ -1,11 +1,14 @@
-from src.models.models import User
-from sqlmodel.ext.asyncio.session import AsyncSession
-from src.utils.pwd_hash import generate_passwd_hash
-from src.schemas.user_schemas import UserCreateModel
 from sqlmodel import select 
+from sqlmodel.ext.asyncio.session import AsyncSession
+
+from src.models.models import User
+
+from src.schemas.user_schemas import UserCreateModel
+from src.utils.pwd_hash import generate_passwd_hash
 
 class UserService:
     async def get_user_by_email(self, email: str, session: AsyncSession):
+        
         statement = select(User).where(User.email == email)
         
         result = await session.exec(statement)
@@ -15,11 +18,14 @@ class UserService:
         return user
     
     async def user_exists(self, email, session: AsyncSession):
+        
         user = await self.get_user_by_email(email, session)
         
         return True if user is not None else False
     
+    
     async def create_user(self, user_data: UserCreateModel, session: AsyncSession):
+        
         user_data_dict = user_data.model_dump()
         
         new_user = User(**user_data_dict)
@@ -34,3 +40,15 @@ class UserService:
         return new_user
     
     
+    async def update_user(self, user: User, user_data: dict, session: AsyncSession):
+        
+        for k, v in user_data.items():
+            setattr(user, k, v)
+        
+        await session.commit()
+        
+        return user
+            
+            
+        
+        
