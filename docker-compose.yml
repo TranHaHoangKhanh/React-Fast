@@ -1,0 +1,80 @@
+version: "3.0"
+
+services:
+  web:
+    build: .
+    volumes:
+      - .:/app
+    environment: 
+      database_url: ${database_url}
+      redis_url: ${redis_url}
+      jwt_secret: ${jwt_secret}
+      jwt_algorithm: ${jwt_algorithm}
+      access_token_expiry: ${access_token_expiry}
+      refresh_token_expiry: ${refresh_token_expiry}
+      mail_username: ${mail_username}
+      mail_password: ${mail_password}
+      mail_from: ${mail_from}
+      mail_port: ${mail_port}
+      mail_server: ${mail_server}
+      mail_from_name: ${mail_from_name}
+      domain: ${domain}
+
+    ports:
+      - "8000:8000"
+
+    depends_on:
+      - db
+      - redis
+
+    networks:
+      - app-network
+
+  db:
+    image: postgres:15
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: bookly
+      POSTGRES_PASSWORD: testpass
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+    networks:
+      - app-network
+  redis:
+    image: redis:latest
+
+    ports:
+      - "6379:6379"
+
+    networks:
+      - app-network
+
+  celery:
+    build: .
+
+    command: celery -A src.utils.celery_tasks.c_app worker --loglevel=INFO
+
+    volumes:
+      - .:/app
+
+    depends_on:
+      - redis
+
+    environment:
+      redis_url: ${redis_url}
+
+    networks:
+      - app-network
+
+volumes:
+  db-data:
+
+networks:
+  app-network:
+    driver: bridge
