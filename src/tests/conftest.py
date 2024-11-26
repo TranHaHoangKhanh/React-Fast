@@ -9,7 +9,7 @@ import uuid
 from src.db.database import get_session
 from src.utils.dependencies import AccessTokenBearer, RoleChecker, RefreshTokenBearer
 from src.models.models import Book
-from src.app import app
+from src import app
 from fastapi.testclient import TestClient
 from datetime import datetime
 from unittest.mock import Mock
@@ -39,7 +39,7 @@ def get_mock_session():
 app.dependency_overrides[get_session] = get_mock_session
 app.dependency_overrides[role_checker] = Mock()
 app.dependency_overrides[refresh_token_bearer] = Mock()
- 
+
 
 @pytest.fixture
 def fake_session():
