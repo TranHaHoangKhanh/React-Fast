@@ -1,11 +1,12 @@
-version: "3.0"
+version: "3.8"
 
 services:
   web:
+    container_name: fastapi
     build: .
     volumes:
       - .:/app
-    environment: 
+    environment:
       database_url: ${database_url}
       redis_url: ${redis_url}
       jwt_secret: ${jwt_secret}
@@ -24,29 +25,29 @@ services:
       - "8000:8000"
 
     depends_on:
-      - db
       - redis
 
     networks:
       - app-network
 
-  db:
-    image: postgres:15
+  pgadmin:
+    container_name: pgadmin4
+
+    image: dpage/pgadmin4
+
+    restart: always
 
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_DB: bookly
-      POSTGRES_PASSWORD: testpass
-
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
     ports:
-      - "5432:5432"
-
-    volumes:
-      - db-data:/var/lib/postgresql/data
-
+      - "5050:80"
     networks:
       - app-network
+
   redis:
+    container_name: redis
+
     image: redis:latest
 
     ports:
@@ -56,6 +57,8 @@ services:
       - app-network
 
   celery:
+    container_name: celery
+
     build: .
 
     command: celery -A src.utils.celery_tasks.c_app worker --loglevel=INFO

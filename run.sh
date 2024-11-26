@@ -1,1 +1,2 @@
-uvicorn src.app:app --port 8000 --reload
+# uvicorn src.app:app --port 8000 --reload
+fastapi run src/
