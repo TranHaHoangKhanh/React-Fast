@@ -34,5 +34,5 @@ def register_middleware(app: FastAPI):
     
     app.add_middleware(
         TrustedHostMiddleware,
-        allowed_hosts=["localhost", "127.0.0.1"]
+        allowed_hosts=["localhost", "127.0.0.1", "fast-api-6x2v.onrender.com", "0.0.0.0"]
     )
