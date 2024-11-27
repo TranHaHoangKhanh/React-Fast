@@ -24,8 +24,8 @@ services:
     ports:
       - "8000:8000"
 
-    depends_on:
-      - redis
+    # depends_on:
+    #   - redis
 
     networks:
       - app-network
@@ -45,16 +45,16 @@ services:
     networks:
       - app-network
 
-  redis:
-    container_name: redis
+  # redis:
+  #   container_name: redis
 
-    image: redis:latest
+  #   image: redis:latest
 
-    ports:
-      - "6379:6379"
+  #   ports:
+  #     - "6379:6379"
 
-    networks:
-      - app-network
+  #   networks:
+  #     - app-network
 
   celery:
     container_name: celery
