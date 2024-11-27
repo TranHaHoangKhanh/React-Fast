@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, BackgroundTasks
 from fastapi.responses import JSONResponse
 from sqlmodel.ext.asyncio.session import AsyncSession
 
@@ -20,7 +20,11 @@ from src.utils.error_handling import (
     PasswordNotMatched
 )
 from src.core.config import settings
+from src.utils.mail import mail, create_message
+"""
+Background tasks for celery
 from src.utils.celery_tasks import send_email
+"""
 
 
 user_router = APIRouter(
@@ -38,19 +42,24 @@ REFRESH_TOKEN_EXPIRY = settings.REFRESH_TOKEN_EXPIRY
 
 
 @user_router.post('/send_mail')
-async def send_mail(emails: EmailModel):
+async def send_mail(emails: EmailModel, bg_tasks: BackgroundTasks):
     emails = emails.addresses
 
     html = "<h1>Welcome to the app</h1>"
     subject = "Welcome to my app"
     
-    send_email.delay(recipients=emails, subject=subject, body=html)
-
+    # send_email.delay(recipients=emails, subject=subject, body=html)
+    
+    
+    message = create_message(recipients=emails, subject=subject, body=html)
+    
+    bg_tasks.add_task(mail.send_message, message)
+    
     return {"message": "Email sent successfully"}
 
 
 @user_router.post('/signup', status_code=status.HTTP_201_CREATED)
-async def create_user_account(user_data: UserCreateModel, session: AsyncSession = Depends(get_session)):
+async def create_user_account(user_data: UserCreateModel, bg_tasks: BackgroundTasks, session: AsyncSession = Depends(get_session)):
     """
     Create user account using email, username, first name, last name params
         user_data: UserCreateModel
@@ -76,7 +85,11 @@ async def create_user_account(user_data: UserCreateModel, session: AsyncSession 
     
     subject = "Verify your email"
     
-    send_email.delay(recipients=emails, subject=subject, body=html)
+    message = create_message(recipients=emails, subject=subject, body=html)
+    
+    bg_tasks.add_task(message.send_mail, message)
+    
+    # send_email.delay(recipients=emails, subject=subject, body=html)
     
     return {
         "message": "Account Created! Check email to verify your account",
@@ -186,7 +199,7 @@ async def revoke_token(token_details: dict = Depends(AccessTokenBearer())):
 
 
 @user_router.post('/password-reset-request')
-async def password_reset_request(email_data: PasswordResetRequestModel):
+async def password_reset_request(email_data: PasswordResetRequestModel, bg_tasks: BackgroundTasks):
     email = email_data.email
 
     token = create_url_safe_token({"email": email})
@@ -200,7 +213,11 @@ async def password_reset_request(email_data: PasswordResetRequestModel):
 
     subject = "Reset Your Password"
     
-    send_email.delay(recipients=[email], subject=subject, body=html)
+    message = create_message(recipients=[email], subject=subject, body=html)
+    
+    bg_tasks.add_task(mail.send_message, message)
+    
+    # send_email.delay(recipients=[email], subject=subject, body=html)
 
     return JSONResponse(
         content={
