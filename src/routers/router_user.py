@@ -87,7 +87,7 @@ async def create_user_account(user_data: UserCreateModel, bg_tasks: BackgroundTa
     
     message = create_message(recipients=emails, subject=subject, body=html)
     
-    bg_tasks.add_task(message.send_mail, message)
+    bg_tasks.add_task(mail.send_message, message)
     
     # send_email.delay(recipients=emails, subject=subject, body=html)
     
