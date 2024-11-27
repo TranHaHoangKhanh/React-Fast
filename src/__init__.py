@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from src.routers.router_welcome import welcome_router
 from src.routers.router_book import book_router
 from src.routers.router_user import user_router
 from src.routers.router_review import review_router
@@ -44,7 +45,7 @@ register_middleware(app)
 
 
 
-
+app.include_router (welcome_router)
 app.include_router(book_router)
 app.include_router(user_router)
 app.include_router(review_router)

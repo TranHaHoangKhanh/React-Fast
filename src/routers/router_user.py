@@ -75,7 +75,7 @@ async def create_user_account(user_data: UserCreateModel, bg_tasks: BackgroundTa
 
     token = create_url_safe_token({"email": email})
 
-    link = f"http://{settings.DOMAIN}/api/v1/auth/verify/{token}"
+    link = f"{settings.DOMAIN}/api/v1/auth/verify/{token}"
 
     html = f"""
     <h1>Verify your Email</h1>
@@ -204,7 +204,7 @@ async def password_reset_request(email_data: PasswordResetRequestModel, bg_tasks
 
     token = create_url_safe_token({"email": email})
 
-    link = f"http://{settings.DOMAIN}/api/v1/auth/password-reset-confirm/{token}"
+    link = f"{settings.DOMAIN}/api/v1/auth/password-reset-confirm/{token}"
 
     html = f"""
     <h1>Reset Your Password</h1>
